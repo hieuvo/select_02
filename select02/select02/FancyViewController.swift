@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 class FancyViewController: UIViewController {
 
@@ -20,6 +21,9 @@ class FancyViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         
+        loadData()
+//        loadDataFromLocalFile()
+        
         // Do any additional setup after loading the view.
     }
 
@@ -28,48 +32,81 @@ class FancyViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+//    func loadDataFromLocalFile() {
+//        print ("Start loading from local file")
+//        
+//        let path = NSBundle.mainBundle().pathForResource("data", ofType:"json")
+//        let dataJson = NSData(contentsOfFile: path!)
+//        let data = try! NSJSONSerialization.JSONObjectWithData(dataJson!, options: NSJSONReadingOptions.MutableContainers) as! [NSDictionary]
+//
+//        
+//        self.persons = []
+//        for p in data {
+//            var person = Person()
+//            person.setData(p)
+//            self.persons?.append(person)
+//        }
+//        
+//        tableView.reloadData()
+//    }
+    
+    func buildUrl(offset: Int? = nil, limit: Int? = nil) -> String {
+        if offset == nil && limit == nil {
+            return "https://fancy-raptor.hyperdev.space/"
+        }
+        
+        
+        return ""
+    }
+    
     func loadData() {
         
-        let url = NSURL(string: "https://fancy-raptor.hyperdev.space/")!
+        let url = NSURL(string: buildUrl())!
         let request = NSURLRequest(URL: url)
         let session = NSURLSession.sharedSession()
-        let dataTask = session.dataTaskWithRequest(request) { (data: NSData?, response: NSURLResponse?, error: NSError?) in
+        print ("Start loading")
+        
+        
+        
+        let task = session.dataTaskWithRequest(request) { (data: NSData?, response: NSURLResponse?, error: NSError?) -> Void in
             guard error == nil else  {
-                print(error)
+                print("error loading from URL", error!)
                 return
             }
             
-            do {
-                // parse response data
-                if let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .AllowFragments) as? NSDictionary {
-                    let datas = json[""] as! [NSDictionary]
-                    for data in datas {
-                        var person = Person()
-                        person.setData(data)
-                        self.persons?.append(person)
-                    }
-                    // reload table from main thread
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        self.tableView.reloadData()
-                    })
+            let jsonData = JSON(data: data!)
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                
+                self.persons = []
+                
+                for (_,p):(String, JSON) in jsonData {
+                    var person = Person()
+                    person.setData(p)
+                    self.persons?.append(person)
                 }
-            } catch {
-                // TODO: handle error
-            }
+                
+                self.tableView.reloadData()
+            })
         }
-        dataTask.resume()
+        
+        task.resume()
     }
 
-    /*
+    
     // MARK: - Navigation
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        let vc = segue.destinationViewController as! FancyDetailViewController
+        let indexPath = tableView.indexPathForCell(sender as! FancyCell)!
+        vc.person = persons![indexPath.row]
     }
-    */
-
+    
+    
+    @IBAction func onLoadMore(sender: AnyObject) {
+        print ("load more")
+    }
+    
 }
 
 extension FancyViewController: UITableViewDataSource {

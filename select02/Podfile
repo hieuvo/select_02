@@ -6,6 +6,7 @@ target 'select02' do
   use_frameworks!
 
   # Pods for select02
+  pod 'SwiftyJSON', '~> 2.3.2'
   pod 'AFNetworking', '~> 3.0'
 
 end
