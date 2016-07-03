@@ -9,12 +9,14 @@
 import Foundation
 import SwiftyJSON
 
-struct Person {
+class Person {
     var id: Int = 0
     var name: String = ""
     var height: Int = 0
     var birthdate: String = ""
     var pictureURL: NSURL = NSURL()
+    
+    var isEmpty: Bool = false
     
     init() {
         id = 0
@@ -24,12 +26,26 @@ struct Person {
         pictureURL = NSURL(fileURLWithPath: "")
     }
     
-    mutating func setData(data: JSON) {
+    init(data: JSON) {
+        setData(data)
+    }
+    
+    func setData(data: JSON) {
         id = Int(data["id"].stringValue)!
         name = data["name"].stringValue
-        height = Int(data["height"].stringValue)!
+        
+        if data["height"].stringValue.isEmpty {
+            height = 0
+        } else {
+            height = Int(data["height"].stringValue)!
+        }
         
         birthdate = data["birthdate"].stringValue
         pictureURL = NSURL(string: String(data["picture"].stringValue))!
+    }
+    
+    func setEmptyRow() {
+        name = "Sorry, we're running out of data"
+        isEmpty = true
     }
 }

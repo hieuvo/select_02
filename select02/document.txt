@@ -1,0 +1,11 @@
+We use 2 custom attributes to determine how many times and how much the user needs to click load more
+- click_count
+- time_from_first_click
+
+1. Click count: help to know how many times the user actually clicks the load more button
+- If it's small: user doesn't demand for more data
+- If it's big: user really wants to get more data ->> should increase the number of default displayed data (2 -> 4, eg)
+2. Time from first click: help to know how urgent/quickly the user demands for more data
+- If it's small: user wants to get more data, but it's not urgent, not he doesn't highly demand it
+- If it's high: high demand for data and he doesn't want to wait much' ->> should increase the number of items when we load more
+

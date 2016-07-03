@@ -8,5 +8,9 @@ target 'select02' do
   # Pods for select02
   pod 'SwiftyJSON', '~> 2.3.2'
   pod 'AFNetworking', '~> 3.0'
+  pod 'Fabric'
+  # pod 'Answers'
+  pod 'Crashlytics'
+  pod 'Optimizely-iOS-SDK'
 
 end
